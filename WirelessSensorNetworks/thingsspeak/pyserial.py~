@@ -1,0 +1,32 @@
+from time import sleep
+import serial
+import httplib ,urllib
+import psutil
+
+ser = serial.Serial('/dev/ttyACM0',9600)
+counter=32
+while True:
+	ser.write(str(chr(counter)))
+	TMP=ser.readline(16384)
+	TMP.rstrip('\n');
+	TMP = TMP.split(":")
+	print TMP
+	print (TMP[0])
+	print (TMP[1])
+	print (TMP[2])
+	print (TMP[3])
+	print (TMP[4])
+		
+	params = urllib.urlencode({'field1': TMP[0], 'field2': TMP[1], 'field3': TMP[2],'field4': TMP[3] ,'field5': TMP[4],'key':'TONOSNIX6EQM9RRK'})
+	
+    	headers = {"Content-type": "application/x-www-form-urlencoded","Accept": "text/plain"}
+    	conn = httplib.HTTPConnection("api.thingspeak.com:80")
+    	conn.request("POST", "/update", params, headers)
+    	response = conn.getresponse()
+    	print response.status, response.reason
+    	data = response.read()
+    	conn.close()
+
+	
+    	    	
+	sleep(.1)
